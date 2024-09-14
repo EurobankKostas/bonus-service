@@ -1,0 +1,31 @@
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: test
+    password: test
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/bonus_db
+    reactive:
+      url: postgresql://localhost:5432/bonus_db
+
+
+  hibernate-orm:
+    database:
+      generation: none
+    log:
+      sql: true
+
+  flyway:
+    active: true
+    migrate-at-start: true
+
+mp:
+  messaging:
+    incoming:
+      "login-events-in":
+        bootstrap:
+          servers: localhost:9092
+    outgoing:
+      "bonus-events-out":
+        bootstrap:
+          servers: localhost:9092
