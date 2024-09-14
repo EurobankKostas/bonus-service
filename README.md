@@ -13,10 +13,10 @@ The Bonus Microservice is designed to handle bonus allocation for players upon t
 
 ## Architecture
 
-- **Database:** Utilizes a relational database (specific choice to be determined by the implementer) with at least the following schema:
-    - `player_bonus` table:
-        - `player_id`: Identifier for the player.
-        - `total_bonus`: Cumulative bonus amount for the player.
+- **Database:** Utilizes a relational database :
+    - `player_bonus` table
+    - `event` table
+
 - **Services Communication:** Uses Apache Kafka for messaging between services.
 
 ### Idempotency in Producers and Consumers
@@ -33,10 +33,10 @@ These measures are critical for avoiding data inconsistencies and ensuring that 
 
 
 ## Prerequisites
-
+- Java JDK 21
 - Docker
-- Kafka running and accessible for event messaging.
-- Access to a relational database.
+- Kafka setup with the necessary topics configured
+- Access to a relational database (PostgreSQL)
 
 ## Setup
 
@@ -48,24 +48,41 @@ These measures are critical for avoiding data inconsistencies and ensuring that 
     - Ensure the `player-login-events` and `player-bonus-updates` topics are created in Kafka.
 
 3. **Docker Compose:**
-    - Navigate to your Docker Compose file located at `C:\Users\kosta\IdeaProjects\login\login\src\main\docker\docker-compose.yml`.
+    - Navigate to your Docker Compose file located at `\bonus-service\src\main\docker\docker-compose.yml`.
     - Run the following command to start the services:
       ```
       docker-compose up
       ```
 
-4. **Entry:**
-    - The service entry point is `http://localhost:8084/v1/login`. Make sure login service is running
-    - A sample request JSON for testing:
-      ```json
-      {
-        "userId": "123e4567-e89b-12d3-a456-426614174000"
-      }
-      ```
+4. **Entry:** Ensure the login service is operational. You can activate existing service use cases through the Login Event Service available at [https://github.com/EurobankKostas/login-event-service](https://github.com/EurobankKostas/login-event-service).
+   - Access the service at `http://localhost:8084/v1/login-event`.
+   - Use the following sample JSON for testing:
+     ```json
+     {
+       "userId": "123e4567-e89b-12d3-a456-426614174000"
+     }
+     ```
 
 ## Pending Optimization
 
-- **Shared Library Implementation:** To optimize the microservice architecture, common models and utilities will be moved to a shared library. This reduces code duplication, ensures consistency across services, and simplifies updates or changes to shared components.
+### Shared Library Implementation
+
+**Description:**
+To optimize the microservice architecture, common models and utilities will be moved to a shared library. This reduces code duplication, ensures consistency across services, and simplifies updates or changes to shared components.
+
+### Periodic Cleanup
+
+**Description:**
+Schedule a periodic cleanup job (e.g., daily, weekly) that deletes event IDs older than a certain threshold (like 24 hours, 7 days, etc.). This strategy can be implemented using a scheduled task in your application or a cron job.
+
+**Benefits:**
+- Helps maintain database performance by regularly removing old data.
+- Can be easily automated to run at non-peak times to minimize impact on database performance.
+- Ensures that only necessary data is retained, reducing storage requirements.
+- Minimizes the risk of reprocessing the same event IDs, ensuring data integrity.
+
+**Alternative solution Description:**
+Immediately delete or mark event IDs as processed in the database after they are successfully consumed and processed. This approach keeps your database lean and can help improve overall performance.
 
 ## Bonus Challenges
 
