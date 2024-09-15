@@ -36,7 +36,7 @@ public class EventService {
      * The use of pessimistic locking is acceptable here because the transition logic executed
      * under the lock is minimal, thus not significantly impacting performance.Also we can configure an appropriate lock timeout
      * Another alternative would be to rely on the primary key constraint to handle failures during insertion and remove the lock.
-     * However, this approach introduces the overhead of exception, transaction rollback, and reduces predictability."
+     * However, this approach introduces the overhead of exception, transaction rollback, and reduces predictability.
      * @param eventId the UUID of the event to check
      * @return a {@link Uni<Boolean>} that emits {@code true} if the event should be skipped,
      *         otherwise {@code false}
